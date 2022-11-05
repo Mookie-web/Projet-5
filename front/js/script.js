@@ -13,7 +13,7 @@ function getProductList() {
             }
         })
         .catch((error) => {
-            alert('Impossible de se connecter au serveur');
+            alert('Impossible de se connecter au serveur, vérifier si le serveur est lancé');
             // console.log(error)  // Affiche error si la promesse est rejetée
         })
 }

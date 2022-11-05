@@ -2,11 +2,14 @@
 
 // STEP  1 : Récupérer l'id courant ( produit.html?id=XXXXXX
 
-const urlParams = new URLSearchParams(query);
 
 const query = window.location.search;
-
+const urlParams = new URLSearchParams(query);
 const id = urlParams.get('id')
+
+let button = document.getElementById('addToCart')
+let colorInput = document.getElementById('colors');
+let quantity = document.getElementById('quantity');
 // console.log(id);
 
 //*****************DECLARATION VARIABLES*****************//
@@ -20,13 +23,12 @@ let colors = document.getElementById('colors');
 
 // STEP 2 : Récupérer les infos du produit (via l'id) depuis l'API
 
+
 fetch('http://localhost:3000/api/products/' + id)  // fetch("http://localhost:3000/api/products/XXXXX")
-    .then((getId) =>{
+    .then((getId) => {
         // console.log(getId);  // Vérifier le retour de l'api via un console.log
         return getId.json();
-    }).then((getProduct)=> {
-    console.log(getProduct);
-
+    }).then((getProduct) => {
 // STEP 3 : Afficher les infos du produit dans le DOM
 
     let imageElement = document.createElement('img');
@@ -47,18 +49,18 @@ fetch('http://localhost:3000/api/products/' + id)  // fetch("http://localhost:30
     price.id = 'productPrice';
 
     description.innerText = getProduct.description;
-    description.id ='productDescription';
+    description.id = 'productDescription';
 
-
+//*****************BOUCLE FOREACH*****************//
     getProduct.colors.forEach((getColors) => {
 
-      // console.log(document.createElement('option'));
-      let option = document.createElement('option');
-      option.innerText = `${getColors}`;
-      option.value = `${getColors}`;
-      option.id = 'productColors';
+        // console.log(document.createElement('option'));
+        let option = document.createElement('option');
+        option.innerText = `${getColors}`;
+        option.value = `${getColors}`;
+        option.id = 'productColors';
 
-      colors.appendChild(option)
+        colors.appendChild(option)
     })
 
 
@@ -67,12 +69,42 @@ fetch('http://localhost:3000/api/products/' + id)  // fetch("http://localhost:30
     descriptionTitle[0].appendChild(description);
 
 
-    })
+})
 
 
+button.addEventListener('click', function () {
+    // Récupérer les informations
+    let color = colorInput.value;
+    let quantityValue = parseInt(quantity.value);
 
 
+    // Créer un objet pour le sauvegarder dans le localstorage ( Clés : Valeurs )
 
+    let productOrder = {
+        id: id,
+        quantity: quantityValue,
+        color: color,
+    }
 
+    let cart = localStorage.getItem('basket');
+    let newItem = true;
 
+    if (cart === null) {
+        cart = [];
+    } else {
+        cart = JSON.parse(cart);
+    }
 
+    for (let product of cart) {
+        if (product.id === productOrder.id && product.color === productOrder.color) {
+            product.quantity += productOrder.quantity;
+            newItem = false;
+        }
+    }
+
+    if (newItem === true) {
+        cart.push(productOrder)
+    }
+
+    localStorage.setItem('basket', JSON.stringify(cart))
+})
