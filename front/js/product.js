@@ -29,6 +29,7 @@ fetch('http://localhost:3000/api/products/' + id)  // fetch("http://localhost:30
         // console.log(getId);  // Vérifier le retour de l'api via un console.log
         return getId.json();
     }).then((getProduct) => {
+
 // STEP 3 : Afficher les infos du produit dans le DOM
 
     let imageElement = document.createElement('img');
@@ -71,13 +72,24 @@ fetch('http://localhost:3000/api/products/' + id)  // fetch("http://localhost:30
 
 })
 
+const openBtn = document.getElementsByClassName('item__content__addButton');
 
 button.addEventListener('click', function () {
-    // Récupérer les informations
+
+
+//*****************RECUPERATION INFORMATION*****************//
+
     let color = colorInput.value;
     let quantityValue = parseInt(quantity.value);
+    console.log(quantity)
+    if (quantity.value <= 0) {
 
+        window.confirm('Ajouter une quantité')
 
+    } else {
+        alert('Produit ajouté au panier')
+    }
+//**********************************************************//
     // Créer un objet pour le sauvegarder dans le localstorage ( Clés : Valeurs )
 
     let productOrder = {

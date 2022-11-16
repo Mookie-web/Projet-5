@@ -229,3 +229,20 @@ const produitPanier = `
 //
 // }
 //
+// form.firstName.addEventListener('change', function () { // Écoute de mon input firstName
+//     validFirstName(this);
+// });
+//
+// const validFirstName = function (inputFirstName) {
+//     let firstNameRegExp = new RegExp(/^[a-z ,.'-]+$/i);
+//
+//     let testFirstName = firstNameRegExp.test(inputFirstName.value);
+//     // let followParaFirst = inputFirstName.nextElementSibling;
+//     let followParaFirst = document.getElementById('firstNameErrorMsg');
+//
+//     if (testFirstName) {
+//         followParaFirst.innerHTML = 'Prénom Valide';
+//     } else {
+//         followParaFirst.innerHTML = 'Prénom non Valide';
+//     }
+// };
