@@ -1,5 +1,4 @@
-let cart = JSON.parse(localStorage.getItem('basket'));
-let form = document.querySelector('.cart__order__form');
+let addToCart = document.getElementById('order');
 //*****************Get products API  via Fetch *****************//
 fetch("http://localhost:3000/api/products/")
     .then(function (res) { // Get response
@@ -12,7 +11,6 @@ fetch("http://localhost:3000/api/products/")
 })
 
 //*****************Comparaison localStorage with Fetch *****************//
-
 function displaySofa(getApi, cart) {
     for (let product of cart) {
         for (let data of getApi) {
@@ -24,7 +22,6 @@ function displaySofa(getApi, cart) {
     deleteItem(getApi, cart)
     changeQty(getApi, cart)
     getTotal(getApi, cart)
-
 }
 
 //*****************Insert Cart Product in HTML *****************//
@@ -54,11 +51,11 @@ function createProductCart(product, data) {
 }
 
 //*****************Delete Item *****************//
-
 function deleteItem(data, products) {
     const itemDelete = document.querySelectorAll(".deleteItem");
     itemDelete.forEach((item) => {
-        item.addEventListener("click", function () {
+        item.addEventListener("click", function (e) {
+            e.preventDefault()
             const product = item.closest("article");
             product.remove();
             const productId = product.dataset.id;
@@ -69,17 +66,18 @@ function deleteItem(data, products) {
                 products.splice(objIndex, 1);
                 let productStorage = JSON.stringify(products);
                 localStorage.setItem('basket', productStorage);
+                //    window.confirm("Produit supprimé")
+                getTotal(data, localStorage.getItem('basket'));
             }
-            getTotal(data, localStorage.getItem('basket'));
+
+            //  window.location.href = "cart.html"
         })
     })
-
-
 }
+
 //*****************End Delete Item *****************//
 
 //*****************Change Quantity *****************//
-
 function changeQty(data, products) {
     const inputs = document.querySelectorAll('.itemQuantity');
     inputs.forEach((item) => {
@@ -93,7 +91,7 @@ function changeQty(data, products) {
 
             if (item.valueAsNumber <= 0) {
                 if (confirm("Attention une valeur à zéro va supprimer le produit ! Souhaitez vous le supprimer ?")) {
-                    product.remove();
+                    product.remove()
                     products.splice(objIndex, 1);
                     let productStorage = JSON.stringify(products);
                     localStorage.setItem('basket', productStorage);
@@ -106,16 +104,15 @@ function changeQty(data, products) {
             getTotal(data, products)
         })
     })
-
 }
 
 //*****************End Change Quantity *****************//
-
 function getTotal(api, cart) {
     let sumQty = 0;
     let priceTotal = 0;
 
     if (cart === null) {
+        document.getElementById("totalQuantity").innerText = "";
     } else {
         for (let product of cart) {
             sumQty = sumQty + parseInt(product.quantity);
@@ -123,44 +120,39 @@ function getTotal(api, cart) {
     }
 
     if (sumQty > 1) {
+        console.log(sumQty);
         for (let product of cart) {
-            for (data of api) {
+            for (let data of api) {
                 if (product.id === data._id) {
+                    console.log(data)
                     priceTotal = priceTotal + product.quantity * data.price
                 }
             }
         }
     }
-    document.getElementById('totalPrice').innerHTML = priceTotal;
-    document.getElementById('totalQuantity').innerHTML = parseInt(sumQty);
-
+    document.getElementById('totalPrice').innerText = priceTotal;
+    document.getElementById('totalQuantity').innerText = sumQty;
 }
+
 //***************** Regex *****************//
-
-let regexName = "/^\w+@[@-zA-Z J+?\. [a-zA-Z]{2,3}$/";
-let regexAddress = "/^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)*$/"
-let regexCity = "/^[a-zA-Zàâäéèêëïîôöùûüç ,.'-]+$/"
-
+let regexName = new RegExp(/^[A-Za-z]{2,}$/);
+let regexAddress = new RegExp("[0-9]{1,4}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)");
+let regexCity = new RegExp("^([a-zA-Z]+(?:. |-| |'))*[a-zA-Z]*$");
+let regexEmail = new RegExp(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/);
 //****************************************//
 
-//***************** Listen modification firstName *****************//
-
+//**************** Listen modification firstName *****************//
 let firstName = document.getElementById('firstName');
-firstName.addEventListener('change', function (){
+firstName.addEventListener('change', function () {
     validFirstName(this);
-
 });
 
-function validFirstName(inputFirstName){
-    let firstNameRegex = new RegExp(regexName);
-
-
-    if (!firstNameRegex.test(inputFirstName.value)){
+function validFirstName(inputFirstName) {
+    if (!regexName.test(inputFirstName.value)) {
         document.getElementById('firstNameErrorMsg').innerText =
             "Exemple : morgan, Morgan"
         return false // Si la condition est fausse le if se stop
-    }
-    else {
+    } else {
         document.getElementById('firstNameErrorMsg').innerText = "";
         return true
     }
@@ -171,18 +163,16 @@ function validFirstName(inputFirstName){
 //***************** Listen modification lastName *****************//
 
 let lastName = document.getElementById('lastName');
-lastName.addEventListener('change',function (){
+lastName.addEventListener('change', function () {
     validLastName(this);
 })
 
-function validLastName(inputLastName){
-    let lastNameRegex = new RegExp(regexName);
-
-    if (!lastNameRegex.test(inputLastName.value)){
+function validLastName(inputLastName) {
+    if (!regexName.test(inputLastName.value)) {
         document.getElementById('lastNameErrorMsg').innerText =
             "stern, Kerguen"
         return false;
-    }else{
+    } else {
         document.getElementById('lastNameErrorMsg').innerText = ""
         return true;
     }
@@ -191,70 +181,111 @@ function validLastName(inputLastName){
 //***************** End listen modification lastName *****************//
 
 //***************** Listen modification address  *****************//
-
 let address = document.getElementById('address');
-address.addEventListener('change', function (){
-  validAddress(this);
+address.addEventListener('change', function () {
+    validAddress(this);
 })
 
-function validAddress(inputAddress){
-    let addressRegex = new RegExp(regexAddress);
-
-    if (!addressRegex.test(inputAddress)){
+function validAddress(inputAddress) {
+    if (!regexAddress.test(inputAddress.value)) {
         document.getElementById('addressErrorMsg').innerText =
             "Exemple : 10 rue de Rennes"
         return false
-
-    }else{
+    } else {
         document.getElementById('addressErrorMsg');
         return true;
     }
 }
+
 //***************** End listen modification address  *****************//
 
 //***************** Listen modification city *****************//
-
 let city = document.getElementById('city');
-city.addEventListener('change', function (){
+city.addEventListener('change', function () {
     validCity(this);
 })
 
-function validCity(inputCity){
-    let cityRegex = new RegExp(regexCity);
-    if (!cityRegex.test(inputCity.value)){
+function validCity(inputCity) {
+    if (!regexCity.test(inputCity.value)) {
         document.getElementById('cityErrorMsg').innerText =
             "Exemples : Montfort-sur-Meu";
         return false;
-    }else{
+    } else {
         document.getElementById('cityErrorMsg').innerText = "";
         return true;
     }
-
 }
 
 //***************** End listen modification city *****************//
 
 //***************** Listen modification Email *****************//
-
 let email = document.getElementById('email');
-email.addEventListener('change', function (){
+email.addEventListener('change', function () {
     validEmail(this);
 })
 
-function validEmail(inputEmail){
-
-    let regexEmail = new RegExp(regexName);
-
-    if (!regexEmail.test(inputEmail)){
+function validEmail(inputEmail) {
+    if (!regexEmail.test(inputEmail.value)) {
         document.getElementById('emailErrorMsg').innerText =
             "Exemples : contact@kanap.fr"
         return false
-
-    }else{
+    } else {
         document.getElementById('emailErrorMsg').innerText = ""
         return true;
     }
 }
+
 //***************** End listen modification city *****************//
 
+//***************** POST Method *****************//
+addToCart.addEventListener('click', function (e) {
+    e.preventDefault();
+    const products = JSON.parse(localStorage.getItem('basket'));
 
+    // Vérifier tous les inputs ( && ), ( vérifier l'abnégation ou pas avec (!)
+    if (!validEmail(email.value) && (!validCity(city.value) && (!validAddress(address.value)) && (!validLastName(lastName.value)) && (!validFirstName(firstName.value)))) {
+        console.log("NOK")
+    }
+
+    // Vérifier si le panier n'est pas vide
+    if (products.length < 1) {
+        alert("Attention votre paner est vide")
+        // ALERT PANIER VIDE
+    }
+    const productsID = [];
+    products.forEach((product) => {
+        productsID.push(product.id)
+    });
+
+    const order = {
+        contact: {
+            firstName: firstName.value,
+            lastName: lastName.value,
+            address: address.value,
+            city: city.value,
+            email: email.value,
+        },
+        products: productsID,
+    };
+
+    orderManager(order)
+})
+
+function orderManager(order) {
+    fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(order),
+    })
+        .then(res => res.json())
+        .then(function (res) {
+            localStorage.clear();
+            window.location = `./confirmation.html?orderId=${res.orderId}`;
+        })
+        .catch(function (error) {
+            console.log(error)
+        });
+}

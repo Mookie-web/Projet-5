@@ -24,7 +24,7 @@ let colors = document.getElementById('colors');
 // STEP 2 : Récupérer les infos du produit (via l'id) depuis l'API
 
 
-fetch('http://localhost:3000/api/products/' + id)  // fetch("http://localhost:3000/api/products/XXXXX")
+fetch('http://localhost:3000/api/products/' + id)
     .then((getId) => {
         // console.log(getId);  // Vérifier le retour de l'api via un console.log
         return getId.json();
@@ -81,14 +81,21 @@ button.addEventListener('click', function () {
 
     let color = colorInput.value;
     let quantityValue = parseInt(quantity.value);
-    console.log(quantity)
-    if (quantity.value <= 0) {
+    // console.log(quantity)
+    if (quantity.value <= 0 && colorInput.value === ''){
+        window.confirm('Ajouter une quantité et une couleur')
+    }
 
+    else if (quantity.value <= 0) {
         window.confirm('Ajouter une quantité')
 
-    } else {
-        alert('Produit ajouté au panier')
+    }else if (colorInput.value === ''){
+        window.confirm('Ajouter une couleur')
+
+    }else {
+        window.confirm('Produit ajouté au panier vous allez être redirigé vers la page panier')
     }
+    window.location.href = "cart.html"
 //**********************************************************//
     // Créer un objet pour le sauvegarder dans le localstorage ( Clés : Valeurs )
 
@@ -99,6 +106,7 @@ button.addEventListener('click', function () {
     }
 
     let cart = localStorage.getItem('basket');
+    console.log(cart)
     let newItem = true;
 
     if (cart === null) {
@@ -109,7 +117,7 @@ button.addEventListener('click', function () {
 
     for (let product of cart) {
         if (product.id === productOrder.id && product.color === productOrder.color) {
-            product.quantity += productOrder.quantity;
+            product.quantity++; //productOrder.quantity;
             newItem = false;
         }
     }

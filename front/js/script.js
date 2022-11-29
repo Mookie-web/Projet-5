@@ -26,7 +26,7 @@ function insertProductDom(product) {
     anchor.href = "./product.html?id=" + product._id;
 
     let article = document.createElement('article');// Création de la balise article
-    let img = document.createElement('img'); // Créatin de la balise img
+    let img = document.createElement('img'); // Création de la balise img
     img.src = product.imageUrl; // Ajout de la source de l'image
     img.alt = product.altTxt;
 
