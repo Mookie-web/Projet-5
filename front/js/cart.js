@@ -133,10 +133,9 @@ function getTotal(api, cart) {
 }
 
 //***************** Regex *****************//
-let regexName = new RegExp(/^[A-Za-z]{2,}$/);
-let regexAddress = new RegExp(/^[A-Za-z]{2,}$/);
-
-let regexCity = new RegExp(/^[A-Za-z]{2,}$/);
+let regexName = new RegExp(/^[a-zA-Z0-9\s,'-]*$/);
+let regexAddress = new RegExp(/^[a-zA-Z0-9\s,'-]*$/);
+let regexCity = new RegExp(/^[a-zA-Z0-9\s,'-]*$/);
 let regexEmail = new RegExp(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/);
 //****************************************//
 
@@ -181,13 +180,13 @@ address.addEventListener('change', function () {
 })
 
 function validAddress(inputAddress) {
-    console.log(inputAddress)
+    console.log(regexAddress.test(inputAddress))
     if (!regexAddress.test(inputAddress)) {
         document.getElementById('addressErrorMsg').innerText  =
             "Exemple : 10 rue de Rennes"
         return false
     } else {
-        document.getElementById('addressErrorMsg');
+        document.getElementById('addressErrorMsg').innerText = "";
         return true;
     }
 }
