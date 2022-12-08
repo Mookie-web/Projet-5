@@ -117,7 +117,7 @@ function getTotal(api, cart) {
             sumQty = sumQty + parseInt(product.quantity);
         }
     }
-    if (sumQty > 1) {
+    if (sumQty >= 1) {
         console.log(sumQty);
         for (let product of cart) {
             for (let data of api) {
@@ -134,23 +134,24 @@ function getTotal(api, cart) {
 
 //***************** Regex *****************//
 let regexName = new RegExp(/^[A-Za-z]{2,}$/);
-let regexAddress = new RegExp("[0-9]{1,4}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)");
-let regexCity = new RegExp("^([a-zA-Z]+(?:. |-| |'))*[a-zA-Z]*$");
+let regexAddress = new RegExp(/^[A-Za-z]{2,}$/);
+
+let regexCity = new RegExp(/^[A-Za-z]{2,}$/);
 let regexEmail = new RegExp(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/);
 //****************************************//
 
 //**************** Listen modification firstName *****************//
 let firstName = document.getElementById('firstName');
 firstName.addEventListener('change', function () {
-    validFirstName(this);
+    validFirstName(this.value);
 });
 function validFirstName(inputFirstName) {
-    if (!regexName.test(inputFirstName.value)) {
-        document.getElementById('firstNameErrorMsg').innerText =
+    if (!regexName.test(inputFirstName)) {
+        document.getElementById('firstNameErrorMsg').innerText  =
             "Exemple : morgan, Morgan"
         return false
     } else {
-        document.getElementById('firstNameErrorMsg').innerText = "";
+        document.getElementById('firstNameErrorMsg').innerText  = "";
         return true
     }
 }
@@ -159,11 +160,11 @@ function validFirstName(inputFirstName) {
 //***************** Listen modification lastName *****************//
 let lastName = document.getElementById('lastName');
 lastName.addEventListener('change', function () {
-    validLastName(this);
+    validLastName(this.value);
 })
 function validLastName(inputLastName) {
-    if (!regexName.test(inputLastName.value)) {
-        document.getElementById('lastNameErrorMsg').innerText =
+    if (!regexName.test(inputLastName)) {
+        document.getElementById('lastNameErrorMsg').innerText  =
             "stern, Kerguen"
         return false;
     } else {
@@ -176,11 +177,13 @@ function validLastName(inputLastName) {
 //***************** Listen modification address  *****************//
 let address = document.getElementById('address');
 address.addEventListener('change', function () {
-    validAddress(this);
+    validAddress(this.value);
 })
+
 function validAddress(inputAddress) {
-    if (!regexAddress.test(inputAddress.value)) {
-        document.getElementById('addressErrorMsg').innerText =
+    console.log(inputAddress)
+    if (!regexAddress.test(inputAddress)) {
+        document.getElementById('addressErrorMsg').innerText  =
             "Exemple : 10 rue de Rennes"
         return false
     } else {
@@ -193,15 +196,15 @@ function validAddress(inputAddress) {
 //***************** Listen modification city *****************//
 let city = document.getElementById('city');
 city.addEventListener('change', function () {
-    validCity(this);
+    validCity(this.value);
 })
 function validCity(inputCity) {
-    if (!regexCity.test(inputCity.value)) {
-        document.getElementById('cityErrorMsg').innerText =
+    if (!regexCity.test(inputCity)) {
+        document.getElementById('cityErrorMsg').innerText  =
             "Exemples : Montfort-sur-Meu";
         return false;
     } else {
-        document.getElementById('cityErrorMsg').innerText = "";
+        document.getElementById('cityErrorMsg').innerText  = "";
         return true;
     }
 }
@@ -210,10 +213,10 @@ function validCity(inputCity) {
 //***************** Listen modification Email *****************//
 let email = document.getElementById('email');
 email.addEventListener('change', function () {
-    validEmail(this);
+    validEmail(this.value);
 })
 function validEmail(inputEmail) {
-    if (!regexEmail.test(inputEmail.value)) {
+    if (!regexEmail.test(inputEmail)) {
         document.getElementById('emailErrorMsg').innerText =
             "Exemples : contact@kanap.fr"
         return false
@@ -225,32 +228,36 @@ function validEmail(inputEmail) {
 //***************** End listen modification city *****************//
 
 //***************** POST Method *****************//
-addToCart.addEventListener('click', function (e) {
-    e.preventDefault();
-    const products = JSON.parse(localStorage.getItem('basket'));
-    if (!validEmail(email.value) && (!validCity(city.value) && (!validAddress(address.value)) && (!validLastName(lastName.value)) && (!validFirstName(firstName.value)))) {
-        console.log("NOK")
-    }
-    if (products.length < 1) {
-        alert("Attention votre panier est vide")
+addToCart.addEventListener( "click", function ( e ) {
+        e.preventDefault();
+        const products = JSON.parse( localStorage.getItem( "basket" ) );
 
+        if (products === null || products.length < 1) {
+            alert( "Please add some products to your cart" );
+        } else if (
+            validEmail( email ) === true &&
+            validCity( city ) === true &&
+            validAddress( address ) === true &&
+            validLastName( lastName ) === true &&
+            validFirstName( firstName ) === true) {
+            const productsID = [];
+            products.forEach( ( product ) => {
+                productsID.push( product.id );
+            } );
+            const order = {
+                contact:{
+                    firstName:firstName.value,
+                    lastName:lastName.value,
+                    address:address.value,
+                    city:city.value,
+                    email:email.value
+                },
+                products:productsID
+            };
+            orderManager( order );
+        }
     }
-    const productsID = [];
-    products.forEach((product) => {
-        productsID.push(product.id)
-    });
-    const order = {
-        contact: {
-            firstName: firstName.value,
-            lastName: lastName.value,
-            address: address.value,
-            city: city.value,
-            email: email.value,
-        },
-        products: productsID,
-    };
-    orderManager(order)
-})
+);
 function orderManager(order) {
     fetch("http://localhost:3000/api/products/order", {
         method: "POST",
