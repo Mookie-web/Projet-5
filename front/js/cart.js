@@ -1,11 +1,11 @@
 let addToCart = document.getElementById('order');
 //*****************Get products API  via Fetch *****************//
 fetch("http://localhost:3000/api/products/")
-    .then(function (res) { // Get response
-        if (res.ok) { // If response is ok
-            return res.json();// So return the response in dot json
+    .then(function (res) {
+        if (res.ok) {
+            return res.json();
         }
-    }).then(function getSofa(api) { // Get each product
+    }).then(function getSofa(api) {
     let cart = JSON.parse(localStorage.getItem('basket'))
     displaySofa(api, cart)
 })
@@ -66,11 +66,11 @@ function deleteItem(data, products) {
                 products.splice(objIndex, 1);
                 let productStorage = JSON.stringify(products);
                 localStorage.setItem('basket', productStorage);
-                //    window.confirm("Produit supprimé")
-                getTotal(data, localStorage.getItem('basket'));
+                   window.confirm("Produit supprimé")
+                getTotal(data, products);
             }
 
-            //  window.location.href = "cart.html"
+
         })
     })
 }
@@ -82,7 +82,7 @@ function changeQty(data, products) {
     const inputs = document.querySelectorAll('.itemQuantity');
     inputs.forEach((item) => {
         item.addEventListener("change", function () {
-            const product = item.closest("article");// closest renvoie l'élément ou l'ancêtre le plus proche
+            const product = item.closest("article");
             const productId = product.dataset.id;
             const productColor = product.dataset.color;
 
@@ -110,7 +110,6 @@ function changeQty(data, products) {
 function getTotal(api, cart) {
     let sumQty = 0;
     let priceTotal = 0;
-
     if (cart === null) {
         document.getElementById("totalQuantity").innerText = "";
     } else {
@@ -118,7 +117,6 @@ function getTotal(api, cart) {
             sumQty = sumQty + parseInt(product.quantity);
         }
     }
-
     if (sumQty > 1) {
         console.log(sumQty);
         for (let product of cart) {
@@ -146,27 +144,23 @@ let firstName = document.getElementById('firstName');
 firstName.addEventListener('change', function () {
     validFirstName(this);
 });
-
 function validFirstName(inputFirstName) {
     if (!regexName.test(inputFirstName.value)) {
         document.getElementById('firstNameErrorMsg').innerText =
             "Exemple : morgan, Morgan"
-        return false // Si la condition est fausse le if se stop
+        return false
     } else {
         document.getElementById('firstNameErrorMsg').innerText = "";
         return true
     }
 }
-
 //***************** End listen modification firstName *****************//
 
 //***************** Listen modification lastName *****************//
-
 let lastName = document.getElementById('lastName');
 lastName.addEventListener('change', function () {
     validLastName(this);
 })
-
 function validLastName(inputLastName) {
     if (!regexName.test(inputLastName.value)) {
         document.getElementById('lastNameErrorMsg').innerText =
@@ -177,7 +171,6 @@ function validLastName(inputLastName) {
         return true;
     }
 }
-
 //***************** End listen modification lastName *****************//
 
 //***************** Listen modification address  *****************//
@@ -185,7 +178,6 @@ let address = document.getElementById('address');
 address.addEventListener('change', function () {
     validAddress(this);
 })
-
 function validAddress(inputAddress) {
     if (!regexAddress.test(inputAddress.value)) {
         document.getElementById('addressErrorMsg').innerText =
@@ -196,7 +188,6 @@ function validAddress(inputAddress) {
         return true;
     }
 }
-
 //***************** End listen modification address  *****************//
 
 //***************** Listen modification city *****************//
@@ -204,7 +195,6 @@ let city = document.getElementById('city');
 city.addEventListener('change', function () {
     validCity(this);
 })
-
 function validCity(inputCity) {
     if (!regexCity.test(inputCity.value)) {
         document.getElementById('cityErrorMsg').innerText =
@@ -215,7 +205,6 @@ function validCity(inputCity) {
         return true;
     }
 }
-
 //***************** End listen modification city *****************//
 
 //***************** Listen modification Email *****************//
@@ -223,7 +212,6 @@ let email = document.getElementById('email');
 email.addEventListener('change', function () {
     validEmail(this);
 })
-
 function validEmail(inputEmail) {
     if (!regexEmail.test(inputEmail.value)) {
         document.getElementById('emailErrorMsg').innerText =
@@ -234,29 +222,23 @@ function validEmail(inputEmail) {
         return true;
     }
 }
-
 //***************** End listen modification city *****************//
 
 //***************** POST Method *****************//
 addToCart.addEventListener('click', function (e) {
     e.preventDefault();
     const products = JSON.parse(localStorage.getItem('basket'));
-
-    // Vérifier tous les inputs ( && ), ( vérifier l'abnégation ou pas avec (!)
     if (!validEmail(email.value) && (!validCity(city.value) && (!validAddress(address.value)) && (!validLastName(lastName.value)) && (!validFirstName(firstName.value)))) {
         console.log("NOK")
     }
-
-    // Vérifier si le panier n'est pas vide
     if (products.length < 1) {
-        alert("Attention votre paner est vide")
-        // ALERT PANIER VIDE
+        alert("Attention votre panier est vide")
+
     }
     const productsID = [];
     products.forEach((product) => {
         productsID.push(product.id)
     });
-
     const order = {
         contact: {
             firstName: firstName.value,
@@ -267,10 +249,8 @@ addToCart.addEventListener('click', function (e) {
         },
         products: productsID,
     };
-
     orderManager(order)
 })
-
 function orderManager(order) {
     fetch("http://localhost:3000/api/products/order", {
         method: "POST",
